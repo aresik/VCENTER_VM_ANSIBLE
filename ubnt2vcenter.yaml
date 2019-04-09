@@ -1,0 +1,21 @@
+---
+- name: Create a VM from a template
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: "vcenter_password"
+      prompt: "vcenter_password"
+  tasks:
+  - name: Clone the template
+    vmware_guest:
+      hostname: 10.10.14.7
+      username: administrator@vsphere.ares-networks.co.uk
+      password: "{{ vcenter_password }}"
+      validate_certs: False
+      name: Ubuntu-Samba01
+      template: ubnt18042lts-template
+      datacenter: Reading-DC
+      folder: "/"
+      state: poweredon
+      cluster: 10.10.14.31
+      wait_for_ip_address: yes

@@ -1,0 +1,12 @@
+[vcenter]
+10.10.14.7
+
+[vcenter:vars]
+inventory_user = administrator@vsphere.ares-networks.co.uk
+
+[ubuntu]
+10.10.14.113
+
+[ubuntu:vars]
+ansible_user = ares
+ansible_ssh_private_key_file=~/.ssh/known_hosts

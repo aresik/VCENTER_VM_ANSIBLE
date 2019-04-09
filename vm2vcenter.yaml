@@ -1,0 +1,49 @@
+---
+# create a new VM from a template
+
+- name: VM from template
+  hosts: vcenter
+  gather_facts: false
+  connection: local
+  vars_prompt:
+    - name: "vcenter_password"
+      prompt: "vcenter_password"
+  vars:
+    vcenter_hostname: "{{ inventory_hostname }}"
+    vcenter_user: "{{ inventory_user }}"
+    vcenter_pass: "{{ vcenter_password }}"
+    esxhost: 10.10.14.31
+    datastore: UCS-datastore1
+    vmtemplate: ubnt18042lts-template
+    name: "newvm"
+    notes: Ansible Test
+    dumpfacts: False
+  tasks:
+    - name: Deploye from template
+      vmware_guest:
+        validate_certs: False
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        esxi_hostname: "{{ esxhost }}"
+        datacenter: Reading-DC
+        folder: "/"
+        name: "{{ name }}"
+        template: "{{ vmtemplate }}"
+        disk:
+          - size_gb: "{{ disk_size | default(23) }}"
+            type: thin
+            datastore: "{{ datastore }}"
+        networks:
+        - name: VM Network
+          type: dhcp
+          start_connected: true
+        hardware:
+          memory_mb: "{{ vm_memory | default(1024) }}"
+        wait_for_ip_address: True
+        state: present
+      register: newvm
+
+    - name: IP address info
+      debug:
+        msg: "{{ newvm.instance.ipv4 }} {{ name }}"
